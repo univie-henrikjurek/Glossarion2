@@ -1,0 +1,85 @@
+services:
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    container_name: glossarion2_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      LIBRETRANSLATE_URL: http://libretranslate:5000
+      DICTIONARY_SERVICE_URL: http://dictionary:8001
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      SOURCE_LANGUAGE: ${SOURCE_LANGUAGE:-en}
+      TARGET_LANGUAGES: ${TARGET_LANGUAGES:-de,fr,it,pl}
+      GLOSSARY_PATH: /app/data/glossary.json
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      FEATURE_ONLINE_LOOKUP: ${FEATURE_ONLINE_LOOKUP:-false}
+      FEATURE_GOOGLE_FALLBACK: ${FEATURE_GOOGLE_FALLBACK:-false}
+      FEATURE_WEB_SEARCH: ${FEATURE_WEB_SEARCH:-false}
+    volumes:
+      - glossary_data:/app/data
+    depends_on:
+      libretranslate:
+        condition: service_healthy
+      dictionary:
+        condition: service_started
+    networks:
+      - glossarion2_network
+
+  dictionary:
+    build:
+      context: ./services/dictionary
+      dockerfile: Dockerfile
+    container_name: glossarion2_dictionary
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DICTIONARY_DATA_PATH: /data
+    volumes:
+      - dictionary_data:/data
+    networks:
+      - glossarion2_network
+
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    platform: linux/amd64
+    container_name: glossarion2_libretranslate
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      REDIS_URL: redis://redis:6379
+      LIMIT_FILE_SIZE: "true"
+      REQUIRE_API_KEY: "false"
+      LT_LOAD_ONLY: "en,de,fr,it,pl"
+      SWAGGER_UI: "false"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - glossarion2_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: glossarion2_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - glossarion2_network
+
+volumes:
+  glossary_data:
+  dictionary_data:
+  redis_data:
+
+networks:
+  glossarion2_network:
+    driver: bridge

@@ -1,0 +1,17 @@
+# Sample glossary for Glossarion2
+# Copy this to ./data/glossary.json and customize
+
+{
+  "honeybadger": {
+    "de": "Honigdachs",
+    "fr": "ratel"
+  },
+  "Dachs": {
+    "en": "badger",
+    "fr": "blaireau"
+  },
+  "technical_term": {
+    "en": "technical term",
+    "de": "Fachbegriff"
+  }
+}
