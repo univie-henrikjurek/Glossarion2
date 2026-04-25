@@ -8,6 +8,7 @@ class LibreTranslateProvider(TranslationProvider):
         self.url = url.rstrip('/')
         self.api_key = api_key
         self.logger = logger
+        self.logger.info(f"LibreTranslateProvider initialized with URL: {self.url}")
 
     async def translate(
         self,
@@ -26,6 +27,8 @@ class LibreTranslateProvider(TranslationProvider):
                     processed_text = processed_text.replace(source_term, target_term)
                     self.logger.debug(f"Applied hint: {source_term} -> {target_term}")
         
+        self.logger.info(f"Calling LibreTranslate: {self.url}/translate with text='{processed_text}'")
+        
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
                 headers = {}
@@ -43,16 +46,20 @@ class LibreTranslateProvider(TranslationProvider):
                     headers=headers
                 )
                 
+                self.logger.info(f"LibreTranslate response status: {response.status_code}")
+                
                 if response.status_code == 200:
                     data = response.json()
+                    translated = data.get("translatedText", processed_text)
+                    self.logger.info(f"Translation result: {translated}")
                     return TranslationResult(
-                        text=data.get("translatedText", processed_text),
+                        text=translated,
                         provider="libretranslate",
                         confidence=data.get("confidence"),
                         hints_applied=hints
                     )
                 else:
-                    self.logger.error(f"LibreTranslate error: {response.status_code}")
+                    self.logger.error(f"LibreTranslate error: {response.status_code} - {response.text}")
                     return TranslationResult(
                         text=text,
                         provider="libretranslate",
