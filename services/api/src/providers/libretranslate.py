@@ -30,10 +30,15 @@ class LibreTranslateProvider(TranslationProvider):
         self.logger.info(f"Calling LibreTranslate: {self.url}/translate with text='{processed_text}'")
         
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            async with httpx.AsyncClient(
+                timeout=30.0,
+                limits=httpx.Limits(max_keepalive_connections=1, max_connections=1)
+            ) as client:
                 headers = {}
                 if self.api_key:
                     headers["Authorization"] = f"Bearer {self.api_key}"
+                
+                self.logger.info(f"Making POST request to {self.url}/translate")
                 
                 response = await client.post(
                     f"{self.url}/translate",
@@ -67,6 +72,8 @@ class LibreTranslateProvider(TranslationProvider):
                     )
         except Exception as e:
             self.logger.error(f"LibreTranslate request failed: {e}")
+            import traceback
+            self.logger.error(traceback.format_exc())
             return TranslationResult(
                 text=text,
                 provider="libretranslate",

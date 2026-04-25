@@ -110,7 +110,7 @@ class Normalizer:
         return f"__PROTECTED_{index}__"
 
     def restore(self, text: str, normalized: NormalizedText) -> str:
-        result = normalized.text
+        result = text
         
         for start, end, original in sorted(normalized.protected_ranges, key=lambda x: x[0], reverse=True):
             placeholder = f"__PROTECTED_{normalized.protected_ranges.index((start, end, original))}__"

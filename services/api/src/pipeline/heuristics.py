@@ -39,9 +39,17 @@ class HeuristicsChecker:
         original_clean = re.sub(r'[^\w\s]', '', original.lower())
         translation_clean = re.sub(r'[^\w\s]', '', translation.lower())
         
+        original_words = set(original_clean.split())
+        translation_words = set(translation_clean.split())
+        
         if original_clean.strip() == translation_clean.strip() and len(original) > 10:
             if source_lang != target_lang:
                 issues.append("identical_to_source")
+        elif len(original_words) > 0 and len(translation_words) > 0:
+            overlap = original_words & translation_words
+            overlap_ratio = len(overlap) / len(original_words)
+            if overlap_ratio > 0.7:
+                issues.append("excessive_word_overlap")
         
         if len(translation) > 10 * len(original):
             issues.append("unusually_long")
