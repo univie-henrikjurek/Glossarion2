@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from . import TranslationProvider, TranslationResult, ProviderFactory
 from ..utils import logger
 
@@ -14,7 +14,7 @@ class LibreTranslateProvider(TranslationProvider):
         text: str,
         source_lang: str,
         target_lang: str,
-        hints: Optional[list[str]] = None
+        hints: Optional[List[str]] = None
     ) -> TranslationResult:
         import httpx
         

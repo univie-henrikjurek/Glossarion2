@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List, Dict, Type
 
 
 @dataclass
@@ -8,7 +8,7 @@ class TranslationResult:
     text: str
     provider: str
     confidence: Optional[float] = None
-    hints_applied: Optional[list[str]] = None
+    hints_applied: Optional[List[str]] = None
 
 
 class TranslationProvider(ABC):
@@ -18,16 +18,16 @@ class TranslationProvider(ABC):
         text: str,
         source_lang: str,
         target_lang: str,
-        hints: Optional[list[str]] = None
+        hints: Optional[List[str]] = None
     ) -> TranslationResult:
         pass
 
 
 class ProviderFactory:
-    _providers: dict[str, type[TranslationProvider]] = {}
+    _providers: Dict[str, Type[TranslationProvider]] = {}
     
     @classmethod
-    def register(cls, name: str, provider_class: type[TranslationProvider]) -> None:
+    def register(cls, name: str, provider_class: Type[TranslationProvider]) -> None:
         cls._providers[name] = provider_class
     
     @classmethod
@@ -37,5 +37,5 @@ class ProviderFactory:
         return cls._providers[name](**kwargs)
     
     @classmethod
-    def available(cls) -> list[str]:
+    def available(cls) -> List[str]:
         return list(cls._providers.keys())

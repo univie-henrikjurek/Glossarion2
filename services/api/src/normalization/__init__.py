@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List, Tuple
 from ..utils import logger
 
 
@@ -8,8 +8,8 @@ from ..utils import logger
 class NormalizedText:
     original: str
     text: str
-    protected_ranges: list[tuple[int, int, str]]
-    splits_applied: list[str]
+    protected_ranges: List[Tuple[int, int, str]]
+    splits_applied: List[str]
 
 
 class Normalizer:
@@ -37,7 +37,7 @@ class Normalizer:
     def normalize(self, text: str, source_lang: Optional[str] = None) -> NormalizedText:
         self.logger.debug(f"Normalizing text: {text[:50]}...")
         
-        protected_ranges: list[tuple[int, int, str]] = []
+        protected_ranges: List[Tuple[int, int, str]] = []
         working_text = text
         
         working_text, protected_ranges = self._protect_urls(working_text, protected_ranges)
@@ -58,25 +58,25 @@ class Normalizer:
             splits_applied=[]
         )
 
-    def _protect_urls(self, text: str, protected: list) -> tuple[str, list]:
+    def _protect_urls(self, text: str, protected: List) -> tuple[str, List]:
         for match in self.URL_PATTERN.finditer(text):
             protected.append((match.start(), match.end(), match.group()))
         result = self.URL_PATTERN.sub(lambda m: self._placeholder(len(protected)), text)
         return result, protected
 
-    def _protect_filepaths(self, text: str, protected: list) -> tuple[str, list]:
+    def _protect_filepaths(self, text: str, protected: List) -> tuple[str, List]:
         for match in self.FILE_PATH_PATTERN.finditer(text):
             protected.append((match.start(), match.end(), match.group()))
         result = self.FILE_PATH_PATTERN.sub(lambda m: self._placeholder(len(protected)), text)
         return result, protected
 
-    def _protect_emails(self, text: str, protected: list) -> tuple[str, list]:
+    def _protect_emails(self, text: str, protected: List) -> tuple[str, List]:
         for match in self.EMAIL_PATTERN.finditer(text):
             protected.append((match.start(), match.end(), match.group()))
         result = self.EMAIL_PATTERN.sub(lambda m: self._placeholder(len(protected)), text)
         return result, protected
 
-    def _protect_code_ids(self, text: str, protected: list) -> tuple[str, list]:
+    def _protect_code_ids(self, text: str, protected: List) -> tuple[str, List]:
         for match in self.CODE_ID_PATTERN.finditer(text):
             protected.append((match.start(), match.end(), match.group()))
         result = self.CODE_ID_PATTERN.sub(lambda m: self._placeholder(len(protected)), text)

@@ -1,6 +1,6 @@
 import struct
 import os
-from typing import BinaryIO
+from typing import BinaryIO, Dict, List, Tuple
 from .utils import logger
 
 
@@ -10,8 +10,8 @@ class StarDictLoader:
     def __init__(self, data_path: str = "/data"):
         self.data_path = data_path
         self.logger = logger
-        self.index: dict[str, list[tuple[int, int]] = {}
-        self.synonyms: dict[str, str] = {}
+        self.index: Dict[str, List[Tuple[int, int]] = {}
+        self.synonyms: Dict[str, str] = {}
         self._loaded = False
 
     def load(self, dictionary_name: str) -> bool:

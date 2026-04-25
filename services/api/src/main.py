@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Dict, List
 from .config import settings
 from .pipeline import TranslationPipeline, PipelineConfig, TranslateRequest, TranslateResponse
 from .utils import logger
@@ -22,14 +22,14 @@ class TranslateRequestModel(BaseModel):
     text: str
     source_lang: Optional[str] = None
     target_lang: str = "de"
-    glossary: Optional[dict[str, dict[str, str]]] = None
+    glossary: Optional[Dict[str, Dict[str, str]]] = None
 
 
 class BatchTranslateRequest(BaseModel):
-    texts: list[str]
+    texts: List[str]
     source_lang: Optional[str] = None
     target_lang: str = "de"
-    glossary: Optional[dict[str, dict[str, str]]] = None
+    glossary: Optional[Dict[str, Dict[str, str]]] = None
 
 
 class LookupRequest(BaseModel):
@@ -112,7 +112,8 @@ async def batch_translate(request: BatchTranslateRequest):
 @app.get("/lookup")
 async def lookup(text: str, source: str = "en", target: str = "de"):
     try:
-        async with __import__('httpx').AsyncClient(timeout=5.0) as client:
+        import httpx
+        async with httpx.AsyncClient(timeout=5.0) as client:
             response = await client.get(
                 f"{settings.dictionary_service_url}/lookup",
                 params={"text": text, "source": source, "target": target}

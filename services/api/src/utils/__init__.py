@@ -1,6 +1,7 @@
+from typing import Optional, Dict, List
+from ..config import settings
 import logging
 import sys
-from . import settings
 
 
 def setup_logging() -> logging.Logger:

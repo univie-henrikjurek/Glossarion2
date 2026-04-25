@@ -1,12 +1,13 @@
 import re
 from dataclasses import dataclass
+from typing import List
 from ..utils import logger
 
 
 @dataclass
 class QualityCheckResult:
     is_suspicious: bool
-    issues: list[str]
+    issues: List[str]
 
 
 class HeuristicsChecker:
@@ -24,7 +25,7 @@ class HeuristicsChecker:
         source_lang: str,
         target_lang: str
     ) -> QualityCheckResult:
-        issues: list[str] = []
+        issues: List[str] = []
         
         if len(translation.strip()) < self.EMPTY_THRESHOLD:
             issues.append("empty_output")

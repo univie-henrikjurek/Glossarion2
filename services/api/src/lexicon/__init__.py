@@ -1,6 +1,6 @@
 import httpx
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List, Dict
 from ..utils import logger
 
 
@@ -16,9 +16,9 @@ class LexiconEntry:
 
 @dataclass
 class LexiconResult:
-    matches: list[LexiconEntry]
-    hints: list[str]
-    protected_terms: list[str]
+    matches: List[LexiconEntry]
+    hints: List[str]
+    protected_terms: List[str]
 
 
 class LexicalResolver:
@@ -27,7 +27,7 @@ class LexicalResolver:
         self.glossary_path = glossary_path
         self.logger = logger
         self._client: Optional[httpx.AsyncClient] = None
-        self._glossary: dict[str, dict[str, str]] = {}
+        self._glossary: Dict[str, Dict[str, str]] = {}
         
         if glossary_path:
             self._load_glossary()
@@ -55,9 +55,9 @@ class LexicalResolver:
     ) -> LexiconResult:
         self.logger.debug(f"Resolving lexicon for: {text[:50]}...")
         
-        hints: list[str] = []
-        protected_terms: list[str] = []
-        matches: list[LexiconEntry] = []
+        hints: List[str] = []
+        protected_terms: List[str] = []
+        matches: List[LexiconEntry] = []
         
         if self._glossary:
             for source_term, translations in self._glossary.items():

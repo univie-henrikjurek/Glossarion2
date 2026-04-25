@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from typing import Optional
-from .normalization import Normalizer, NormalizedText, create_normalizer
-from .lexicon import LexicalResolver, LexiconResult, create_lexical_resolver
-from .providers import TranslationProvider, ProviderFactory, TranslationResult
-from .providers.libretranslate import create_libretranslate_provider
-from .pipeline.heuristics import HeuristicsChecker, QualityCheckResult, create_heuristics_checker
+from typing import Optional, Dict, List
+from ..normalization import Normalizer, NormalizedText, create_normalizer
+from ..lexicon import LexicalResolver, LexiconResult, create_lexical_resolver
+from ..providers import TranslationProvider, ProviderFactory, TranslationResult
+from ..providers.libretranslate import create_libretranslate_provider
+from .heuristics import HeuristicsChecker, QualityCheckResult, create_heuristics_checker
 from ..utils import logger
 
 
@@ -22,7 +22,7 @@ class TranslateRequest:
     text: str
     source_lang: str
     target_lang: str
-    glossary: Optional[dict[str, dict[str, str]]] = None
+    glossary: Optional[Dict[str, Dict[str, str]]] = None
 
 
 @dataclass
@@ -31,9 +31,9 @@ class TranslateResponse:
     original: str
     source_lang: str
     target_lang: str
-    hints_applied: list[str]
-    protected_terms: list[str]
-    quality_issues: list[str]
+    hints_applied: List[str]
+    protected_terms: List[str]
+    quality_issues: List[str]
     provider: str
 
 
@@ -99,7 +99,7 @@ class TranslationPipeline:
             provider=translation_result.provider
         )
 
-    def _load_glossary(self) -> dict[str, dict[str, str]]:
+    def _load_glossary(self) -> Dict[str, Dict[str, str]]:
         import json
         import os
         

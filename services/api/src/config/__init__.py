@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import List
 
 
 class Settings(BaseSettings):
@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     feature_web_search: bool = False
 
     @property
-    def target_language_list(self) -> list[str]:
+    def target_language_list(self) -> List[str]:
         return [lang.strip() for lang in self.target_languages.split(",")]
 
     class Config:
