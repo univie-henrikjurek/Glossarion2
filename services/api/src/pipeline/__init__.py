@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+﻿from dataclasses import dataclass
 from typing import Optional, Dict, List
 from ..normalization import Normalizer, NormalizedText, create_normalizer
 from ..lexicon import LexicalResolver, LexiconResult, create_lexical_resolver

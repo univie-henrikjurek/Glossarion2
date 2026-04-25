@@ -1,4 +1,4 @@
-from typing import Optional, List
+﻿from typing import Optional, List
 from . import TranslationProvider, TranslationResult, ProviderFactory
 from ..utils import logger
 

@@ -1,4 +1,4 @@
-import struct
+﻿import struct
 import os
 from typing import BinaryIO, Dict, List, Tuple
 from .utils import logger
@@ -10,7 +10,7 @@ class StarDictLoader:
     def __init__(self, data_path: str = "/data"):
         self.data_path = data_path
         self.logger = logger
-        self.index: Dict[str, List[Tuple[int, int]] = {}
+        self.index: Dict[str, List[Tuple[int, int]]] = {}
         self.synonyms: Dict[str, str] = {}
         self._loaded = False
 
@@ -70,7 +70,7 @@ class StarDictLoader:
                     self.index[word] = []
                 self.index[word].append((offset, word_count))
 
-    def lookup(self, term: str) -> list[dict]:
+    def lookup(self, term: str) -> List[Dict]:
         term_lower = term.lower()
         results = []
         
